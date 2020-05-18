@@ -1,0 +1,77 @@
+
+spring:
+  application:
+    name: shardingsphere-case
+  main:
+    allow-bean-definition-overriding: true #
+  rocketmq:
+    name-server: 192.168.120.108:9876
+    topic: topic-0514
+    tag: tag-0514
+    consumer:
+      group: consumer-0514
+    producer:
+      group: group-0514
+  redis:
+    host: 192.168.120.108
+    port: 6379
+    password: redis
+    database: 15
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: 5000
+        max-idle: 8
+        min-idle: 0
+    timeout: 10000
+
+server:
+  port: 9961
+
+sharding:
+  jdbc:
+    datasource:
+      names: db0,db1
+      db0:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver # 添加数据库服务器时区
+        jdbc-url: jdbc:mysql://localhost:3306/db0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+        username: root
+        password: root
+      db1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/db1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+        username: root
+        password: root
+    # ˮƽ��ֵ����ݿ⣨�� ���÷ֿ� + �ֱ���� �б��ʽ��Ƭ����
+    # �ֿ����
+    config:
+      sharding:
+        default-database-strategy:
+          inline:
+            sharding-column: id
+            algorithm-expression: db$->{id %2}
+        # �ֱ���� ����studenterΪ�߼��� �ֱ���Ҫȡ����age�ֶ�
+        tables:
+          student:
+            actual-data-nodes: db$->{0..1}.student_$->{0..1}
+            table-strategy:
+              #              inline:
+              #                sharding-column: age
+              #                algorithm-expression: student_$->{age %2} # ��Ƭ�㷨���ʽ
+              standard: #���ڵ���Ƭ���ı�׼��Ƭ���
+                sharding-column: age
+                precise-algorithm-class-name: com.da.shuai.shardingspherecase.config.StudentPreciseShardingAlgorithm
+                range-algorithm-class-name:  com.da.shuai.shardingspherecase.config.StudentPreciseShardingAlgorithm
+            key-generator-column-name: id
+      #��ӡִ�е����ݿ��Լ����
+      props:
+        sql:
+          show: true
+#mybatis-plusӳ��mapper�ļ�
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  #  type-aliases-package: 类包名
+  type-aliases-package: com.da.shuai.shardingspherecase.entity
+

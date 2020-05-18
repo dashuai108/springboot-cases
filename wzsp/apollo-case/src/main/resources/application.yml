@@ -1,0 +1,26 @@
+#server:
+#  port: 8761
+
+app:
+  id: apollo-case
+
+
+
+
+apollo:
+  meta: http://192.168.120.108:8080
+#  cluster：: shajq
+  bootstrap:
+    namespaces: apollo-case
+    enabled: true
+    eagerLoad:
+      enabled: true
+
+#管理日志的目录
+logging:
+  level:
+    com:
+      da:
+        shuai:
+          apollocase:
+            controller: debug

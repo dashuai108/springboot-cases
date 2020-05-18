@@ -1,0 +1,24 @@
+
+spring:
+  application:
+    name: dubbo-provider
+
+dubbo:
+  scan:
+    base-packages: com.da.shuai.dubbopovider.service
+  application:
+    name: dubbo-provider
+  protocol:
+    port: 20880
+    name: dubbo
+  registry:
+    address: zookeeper://192.168.120.108:2181
+    timeout: 300000
+  config-center:
+    timeout: 300000
+
+hello:
+  service:
+    version: 1.0.0
+server:
+  port: 9090
